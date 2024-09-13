@@ -6,6 +6,7 @@ const User = require("./models/userModel");
 const Characters = require("./models/charactersModel")
 const LightCone = require("./models/lightConeModel")
 const PickAndBans = require("./models/pickAndBanModel")
+const Timer = require("./models/timerModel")
 const ForProd = require('./models/forProdModel')
 const forProdFileModel = require('./models/forProdFileModel');
 const cors = require("cors");
@@ -416,6 +417,31 @@ app.delete("/lightcones", async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 });
+
+app.get('/timer', async (req, res) => {
+    try {
+        const timer = await Timer.find({});
+        res.status(200).json(timer);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+app.post('/timer/update', async (req, res) => {
+    try {
+        const { penaltyTimer, mainTimer } = req.body;
+
+        const updatedTimer = await Timer.findOneAndUpdate({}, {
+            penaltyTimer,
+            mainTimer
+        }, { new: true, upsert: true });
+
+        res.json(updatedTimer);
+    } catch (error) {
+        res.status(500).json({ error: 'Ошибка обновления таймера' });
+    }
+});
+
 
 mongoose.set("strictQuery", false);
 mongoose.connect(process.env.DATABASE_URL, {
