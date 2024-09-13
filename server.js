@@ -420,10 +420,13 @@ app.delete("/lightcones", async (req, res) => {
 
 app.get('/timer', async (req, res) => {
     try {
-        const timer = await Timer.find({});
-        res.status(200).json(timer);
+        const timer = await Timer.findOne();
+        if (!timer) {
+            return res.status(404).json({ message: 'Timer not exist' });
+        }
+        res.json(timer);
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({ error: 'Timer get error' });
     }
 });
 
@@ -438,7 +441,7 @@ app.post('/timer/update', async (req, res) => {
 
         res.json(updatedTimer);
     } catch (error) {
-        res.status(500).json({ error: 'Ошибка обновления таймера' });
+        res.status(500).json({ error: 'Error of update timer' });
     }
 });
 
