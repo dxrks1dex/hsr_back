@@ -33,7 +33,8 @@ const pickAndBanSchema = mongoose.Schema({
         secondCircleCount: Number,
         deathCount: Number,
         stage: "pick" | "ban" | null,
-        uid: String | null
+        uid: String | null,
+        nickname: String
     },
     secondPlayer: {
         characters: [characterSchema],
@@ -43,7 +44,8 @@ const pickAndBanSchema = mongoose.Schema({
         secondCircleCount: Number,
         deathCount: Number,
         stage: "pick" | "ban" | null,
-        uid: String | null
+        uid: String | null,
+        nickname: String
     },
     thirdPlayer: {
         characters: [characterSchema],
@@ -53,7 +55,8 @@ const pickAndBanSchema = mongoose.Schema({
         secondCircleCount: Number,
         deathCount: Number,
         stage: "pick" | "ban" | null,
-        uid: String | null
+        uid: String | null,
+        nickname: String
     },
     fourthPlayer: {
         characters: [characterSchema],
@@ -63,7 +66,8 @@ const pickAndBanSchema = mongoose.Schema({
         secondCircleCount: Number,
         deathCount: Number,
         stage: "pick" | "ban" | null,
-        uid: String | null
+        uid: String | null,
+        nickname: String
     }
 });
 
