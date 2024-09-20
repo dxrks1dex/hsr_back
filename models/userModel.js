@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const lightConeSchema = mongoose.Schema({
     id: String,
     name: String,
+    secondName: String,
     rarity: Number,
     cost: Number,
     icon: String,
@@ -12,6 +13,7 @@ const lightConeSchema = mongoose.Schema({
 
 const characterSchema = mongoose.Schema({
     id: String,
+    level: Number,
     rarity: Number,
     rank: Number,
     element: String,
