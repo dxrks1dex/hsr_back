@@ -122,6 +122,103 @@ app.delete("/forProd", async (req, res) => {
 });
 
 app.get('/pickAndBan/updates', eventsHandler);
+app.get('/game/pickAndBan/updates', eventsHandler);
+
+app.get("/game/pickAndBan", async (req, res) => {
+    try {
+        const pickAndBan = await PickAndBans.find({});
+        res.status(200).json(pickAndBan);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+app.get('/game/pickAndBan/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        // Проверка валидности ObjectId
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({ message: "Invalid ID format" });
+        }
+
+        // Поиск документа по ID
+        const pickAndBan = await PickAndBans.findById(id);
+
+        if (!pickAndBan) {
+            return res.status(404).json({ message: "Pick and Ban not found" });
+        }
+
+        res.status(200).json(pickAndBan);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+app.post("/game/pickAndBan", async (req, res) => {
+    try {
+        const pickAndBanData = req.body;
+        const pickAndBan = new PickAndBans(pickAndBanData);
+        await pickAndBan.save();
+        sendEventsToAll(pickAndBan);
+        res.status(201).json(pickAndBan);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+app.put("/game/pickAndBan/:id/:player", async (req, res) => {
+    try {
+        const { id, player } = req.params;
+        const updatedData = req.body;
+
+        const filter = { _id: id };
+        const updateData = {
+            $set: {
+                [`${player}.characters`]: updatedData.characters,
+                [`${player}.picked`]: updatedData.picked,
+                [`${player}.banned`]: updatedData.banned,
+                [`${player}.firstCircleCount`]: updatedData.firstCircleCount,
+                [`${player}.secondCircleCount`]: updatedData.secondCircleCount,
+                [`${player}.deathCount`]: updatedData.deathCount,
+                [`${player}.stage`]: updatedData.stage,
+                [`${player}.nickname`]: updatedData.nickname,
+                [`${player}.uid`]: updatedData.uid
+            }
+        };
+
+        const pickAndBan = await PickAndBans.findOneAndUpdate(filter, updateData, {
+            new: true,
+        });
+
+        if (!pickAndBan) {
+            return res.status(404).json({ message: "PickAndBan not found" });
+        }
+
+        sendEventsToAll(pickAndBan);
+        res.status(200).json(pickAndBan);
+    } catch (error) {
+        res.status(500).json({ message: error.message }); // Обработка ошибок
+    }
+});
+
+app.delete("/game/pickAndBan/:id", async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        // Удаление записи по ObjectId
+        const pickAndBan = await PickAndBans.findByIdAndDelete(id);
+        if (!pickAndBan) {
+            return res.status(404).json({ message: "PickAndBan not found" });
+        }
+
+        sendEventsToAll({ message: `Deleted pickAndBan with ID: ${id}` });
+        res.status(200).json(pickAndBan);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
 
 app.get('/pickAndBan', async (req, res) => {
     try {
