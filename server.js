@@ -7,6 +7,7 @@ const Characters = require("./models/charactersModel")
 const LightCone = require("./models/lightConeModel")
 const PickAndBans = require("./models/pickAndBanModel")
 const Timer = require("./models/timerModel")
+const Synergy = require("./models/sinergyModel")
 const ForProd = require('./models/forProdModel')
 const forProdFileModel = require('./models/forProdFileModel');
 const cors = require("cors");
@@ -176,6 +177,7 @@ app.put("/game/pickAndBan/:id/:player", async (req, res) => {
         const updateData = {
             $set: {
                 [`${player}.characters`]: updatedData.characters,
+                [`${player}.synergy`]: updatedData.synergy,
                 [`${player}.picked`]: updatedData.picked,
                 [`${player}.banned`]: updatedData.banned,
                 [`${player}.firstCircleCount`]: updatedData.firstCircleCount,
@@ -539,6 +541,67 @@ app.post('/timer/update', async (req, res) => {
         res.json(updatedTimer);
     } catch (error) {
         res.status(500).json({ error: 'Error of update timer' });
+    }
+});
+
+app.get("/synergy", async (req, res) => {
+    try {
+        const synergies = await Synergy.find();
+        res.json(synergies);
+    } catch (error) {
+        res.status(500).json({ error: "Ошибка сервера" });
+    }
+});
+
+app.get("/synergy/:id", async (req, res) => {
+    try {
+        const synergy = await Synergy.findById(req.params.id);
+        if (!synergy) return res.status(404).json({ error: "Связка не найдена" });
+        res.json(synergy);
+    } catch (error) {
+        res.status(500).json({ error: "Ошибка сервера" });
+    }
+});
+
+app.post("/synergy", async (req, res) => {
+    try {
+        const { url, name, cost } = req.body;
+        if (!url || !name || cost === undefined) {
+            return res.status(400).json({ error: "Все поля обязательны" });
+        }
+        const newSynergy = new Synergy({ url, name, cost });
+        await newSynergy.save();
+        res.status(201).json(newSynergy);
+    } catch (error) {
+        console.error("Ошибка сервера:", error); // Выведет ошибку в консоль
+        res.status(500).json({ error: "Ошибка сервера" });
+    }
+});
+
+
+app.put("/synergy/:id", async (req, res) => {
+    try {
+        const { name, cost } = req.body;
+        const synergy = await Synergy.findByIdAndUpdate(
+            req.params.id,
+            { name, cost },
+            { new: true }
+        );
+        if (!synergy) return res.status(404).json({ error: "Связка не найдена" });
+        res.json(synergy);
+    } catch (error) {
+        res.status(500).json({ error: "Ошибка сервера" });
+    }
+});
+
+
+app.delete("/synergy/:id", async (req, res) => {
+    try {
+        const synergy = await Synergy.findByIdAndDelete(req.params.id);
+        if (!synergy) return res.status(404).json({ error: "Связка не найдена" });
+        res.status(204).send();
+    } catch (error) {
+        res.status(500).json({ error: "Ошибка сервера" });
     }
 });
 

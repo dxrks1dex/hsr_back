@@ -26,6 +26,12 @@ const characterSchema = mongoose.Schema({
     }
 }, { _id: false });
 
+const SynergySchema = mongoose.Schema({
+    url: { type: String, required: true },
+    name: { type: String, required: true },
+    cost: { type: Number, required: true },
+});
+
 const pickAndBanSchema = mongoose.Schema({
     firstPlayer: {
         characters: [characterSchema],
@@ -36,7 +42,11 @@ const pickAndBanSchema = mongoose.Schema({
         deathCount: Number,
         stage: "pick" | "ban" | null,
         uid: String | null,
-        nickname: String
+        nickname: String,
+        synergy: {
+            required: false,
+            type: [SynergySchema]
+        }
     },
     secondPlayer: {
         characters: [characterSchema],
@@ -47,7 +57,11 @@ const pickAndBanSchema = mongoose.Schema({
         deathCount: Number,
         stage: "pick" | "ban" | null,
         uid: String | null,
-        nickname: String
+        nickname: String,
+        synergy: {
+            required: false,
+            type: [SynergySchema]
+        }
     },
     thirdPlayer: {
         characters: [characterSchema],
