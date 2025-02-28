@@ -581,10 +581,10 @@ app.post("/synergy", async (req, res) => {
 
 app.put("/synergy/:id", async (req, res) => {
     try {
-        const { name, cost } = req.body;
+        const { name, cost, url } = req.body;
         const synergy = await Synergy.findByIdAndUpdate(
             req.params.id,
-            { name, cost },
+            { name, cost, url },
             { new: true }
         );
         if (!synergy) return res.status(404).json({ error: "Связка не найдена" });
